@@ -4,14 +4,32 @@ Emilia Ciobanu @ 2013
 """
 import csv
 
+from stemming.porter2 import stem
+
 from Parser import Parser
 from stopwords import stopwords
 
+class AnewWords:
+    def __init__(self, file_input):
+        self._words = []
+        self.file_input = file_input
+
+    def handle(self):
+        with open(self.file_input,'rb') as fin:
+            dr = csv.DictReader(fin)
+            self._words = [i['Description'] for i in dr]
+
+    @property
+    def words(self):
+        self.handle()
+        return self._words
+
 class ValenceTextHandler:
     """
-    ValenceTextHandler class is used to further process input text such as:
-        * eliminate blacklist words
-        * eliminate articles, useless words, noise-producer words
+    ValenceTextHandler class is a helper class for ValenceAssigner.
+    It further processes input text by:
+        * eliminating blacklist words
+        * eliminating articles, useless words, noise-producer words
 
         * [input] - list containing words (initial text stripped of punctuation)
         * [output] - list containing valuable words
@@ -23,8 +41,23 @@ class ValenceTextHandler:
         self.input_words = self.parser.words
         self._words = []
 
+        # get ANEW words
+        self.anew = AnewWords("scripts/male.csv")
+        self.anew_words = self.anew.words
+
     def handle(self):
+        # remove stopwords
         self._words = filter(lambda k: k not in stopwords, self.input_words)
+        # lower each word
+        self._words = [word.lower() for word in self._words]
+        # stem words if not in ANEW database
+        tmp = []
+        for word in self._words:
+            if word not in self.anew_words:
+                tmp.append(stem(word))
+            else:
+                tmp.append(word)
+        self._words = tmp
 
     @property
     def words(self):
@@ -49,4 +82,4 @@ if __name__=="__main__":
 
     for story in stories:
         v = ValenceTextHandler("stories/%s" % story)
-        print len(v.words)
+        print v.words.__len__()
