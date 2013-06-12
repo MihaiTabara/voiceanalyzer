@@ -4,6 +4,7 @@ Emilia Ciobanu @ 2013
 """
 import csv
 
+from jellyfish import levenshtein_distance, jaro_distance
 from stemming.porter2 import stem
 
 from Parser import Parser
@@ -51,13 +52,19 @@ class ValenceTextHandler:
         # lower each word
         self._words = [word.lower() for word in self._words]
         # stem words if not in ANEW database
+        self._words = [stem(word) if word not in self.anew_words
+                                  else word for word in self._words]
+
+        # Jaro-winkler and Levensteinh distance
+        """
         tmp = []
         for word in self._words:
-            if word not in self.anew_words:
-                tmp.append(stem(word))
-            else:
-                tmp.append(word)
-        self._words = tmp
+            for anew_word in self.anew_words:
+                ld = levenshtein_distance(word, anew_word)
+                jd = jaro_distance(word, anew_word)
+                if ld <= 1 and jd >= 0.90:
+                    pass
+        """
 
     @property
     def words(self):
@@ -79,4 +86,4 @@ if __name__=="__main__":
 
     for story in stories:
         v = ValenceTextHandler("stories/%s" % story)
-        print v.words.__len__()
+        print len(v.words)
