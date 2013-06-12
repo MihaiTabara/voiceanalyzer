@@ -55,7 +55,8 @@ class ValenceTextHandler:
         self._words = [stem(word) if word not in self.anew_words
                                   else word for word in self._words]
 
-        # Jaro-winkler and Levensteinh distance
+        # Jaro-winkler and Levensteinh distance empiracally proved to be a bad
+        # idea
         """
         tmp = []
         for word in self._words:
