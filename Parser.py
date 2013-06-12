@@ -1,17 +1,19 @@
 """
 Mihai Tabara @ 2013
 Emilia Ciobanu @ 2013
-
-Parser class:
-    [input] - file of ASCII text
-    [output] - list containing words (initial text stripped of punctuation)
 """
 import string
 
 class Parser:
+    """
+    Parser class is used to process text from ASCII files to get word list
+        * [input] - file of ASCII text
+        * [output] - list containing words (initial text stripped of punctuation)
+    """
+
     def __init__(self, file_input):
         self.file_input = file_input
-        self.words = []
+        self._words = []
 
     def parse_line(self, string_line):
         exclude = set(string.punctuation)
@@ -27,7 +29,12 @@ class Parser:
             for line in raw_content:
                 line_words = self.parse_line(line)
                 if line_words:
-                    self.words.extend(line_words)
+                    self._words.extend(line_words)
+
+    @property
+    def words(self):
+        self.parse_file()
+        return self._words
 
 if __name__=="__main__":
     stories = ["aladdin_and_the_wonder_lamp",
@@ -44,6 +51,5 @@ if __name__=="__main__":
 
     for story in stories:
         p = Parser("stories/%s" % story)
-        p.parse_file()
         print p.words.__len__()
 
