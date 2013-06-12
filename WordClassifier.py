@@ -88,7 +88,7 @@ class WordClassifer:
                 words[to_rate_word]['Dominance Mean'] /= current_counter
 
                 self.update(words)
-                sys.stdout.write("> Thank you for your ratings!")
+                sys.stdout.write("> Thank you for your ratings!\n")
                 sys.exit(0)
 
             if line == "bye\n":
